@@ -24,40 +24,60 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     async function getInitialSession() {
-      setLoading(true);
-      
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Error getting session:', error);
+      try {
+        setLoading(true);
+        
+        // Отримуємо сесію користувача
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Помилка отримання сесії:', error);
+          toast({
+            title: 'Помилка сесії',
+            description: 'Не вдалося отримати сесію користувача.',
+            variant: 'destructive',
+          });
+          setLoading(false);
+          return;
+        }
+
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          try {
+            // Отримуємо роль користувача
+            const { data, error: profileError } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single();
+            
+            if (profileError) {
+              console.warn('Помилка отримання профілю:', profileError);
+              // Не показуємо помилку користувачу, оскільки це може бути просто відсутність запису
+            } else if (data) {
+              setIsAdmin(data.role === 'admin');
+            }
+          } catch (profileErr) {
+            console.error('Помилка при запиті профілю:', profileErr);
+          }
+        }
+      } catch (e) {
+        console.error('Неочікувана помилка при ініціалізації автентифікації:', e);
         toast({
-          title: 'Помилка сесії',
-          description: 'Не вдалося отримати сесію користувача.',
+          title: 'Помилка автентифікації',
+          description: 'Сталася неочікувана помилка при ініціалізації автентифікації.',
           variant: 'destructive',
         });
+      } finally {
+        setLoading(false);
       }
-
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // Отримуємо роль користувача
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (!error && data) {
-          setIsAdmin(data.role === 'admin');
-        }
-      }
-      
-      setLoading(false);
     }
 
     getInitialSession();
 
+    // Підписуємося на зміни стану автентифікації
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
@@ -89,7 +109,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description: error.message || 'Не вдалося увійти в систему.',
         variant: 'destructive',
       });
-      console.error('Error signing in:', error);
+      console.error('Помилка входу:', error);
     } finally {
       setLoading(false);
     }
@@ -109,7 +129,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description: 'Не вдалося вийти з системи.',
         variant: 'destructive',
       });
-      console.error('Error signing out:', error);
+      console.error('Помилка виходу:', error);
     } finally {
       setLoading(false);
     }
