@@ -16,6 +16,7 @@ import AdminProjectsPage from "./pages/AdminProjectsPage";
 import EditProjectPage from "./pages/EditProjectPage";
 import NotFound from "./pages/NotFound";
 
+// Create a QueryClient for React Query
 const queryClient = new QueryClient();
 
 const App = () => (
