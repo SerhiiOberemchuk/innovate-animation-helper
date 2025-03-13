@@ -1,4 +1,3 @@
-
 import { createClient } from "@supabase/supabase-js";
 
 // Default values to prevent development errors
@@ -19,11 +18,8 @@ const createSupabaseClient = () => {
       "Supabase URL or Anon Key missing! Make sure you've configured VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables."
     );
 
-    // Return client with dummy URL to avoid initialization errors
-    // In a real scenario, it won't work without valid credentials
     return createClient("https://example.supabase.co", "dummy-key");
   }
-
   return createClient(supabaseUrl, supabaseAnonKey);
 };
 
