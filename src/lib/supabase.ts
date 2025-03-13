@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 // Значення за замовчуванням для запобігання помилок під час розробки
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+console.log(supabaseUrl, supabaseAnonKey);
 
 // Функція для створення клієнта Supabase з перевіркою на наявність конфігурації
 const createSupabaseClient = () => {
