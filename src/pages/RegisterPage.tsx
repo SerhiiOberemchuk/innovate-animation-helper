@@ -24,8 +24,8 @@ const RegisterPage = () => {
     
     if (password !== confirmPassword) {
       toast({
-        title: "Помилка",
-        description: "Паролі не співпадають",
+        title: "Error",
+        description: "Passwords do not match",
         variant: "destructive",
       });
       return;
@@ -34,6 +34,7 @@ const RegisterPage = () => {
     try {
       setLoading(true);
       
+      // Sign up the user
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -43,39 +44,42 @@ const RegisterPage = () => {
         throw error;
       }
       
-      if (data) {
-        // Set role as admin for the first user (or based on your logic)
-        try {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert({
-              id: data.user?.id,
-              email: email,
-              role: 'admin', // Set role as admin
-              created_at: new Date().toISOString(),
-            });
-            
-          if (profileError) {
-            console.error('Error updating profile:', profileError);
-          }
-        } catch (profileErr) {
-          console.error('Error creating profile:', profileErr);
+      if (data.user) {
+        console.log('User registered:', data.user.id);
+        
+        // Create profile with admin role
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            email: email,
+            role: 'admin', // Set role as admin
+            created_at: new Date().toISOString(),
+          });
+          
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+          toast({
+            title: "Profile Error",
+            description: "User created but profile could not be set up. Please contact support.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Success",
+            description: "Registration successful! You can now log in.",
+          });
         }
         
-        toast({
-          title: "Успіх",
-          description: "Реєстрація успішна! Тепер ви можете увійти.",
-        });
-        
-        // Redirect to login
+        // Redirect to login after a short delay
         setTimeout(() => {
           window.location.href = '/login';
         }, 2000);
       }
     } catch (error: any) {
       toast({
-        title: "Помилка реєстрації",
-        description: error.message || "Не вдалося зареєструватися",
+        title: "Registration error",
+        description: error.message || "Could not register",
         variant: "destructive",
       });
       console.error('Registration error:', error);

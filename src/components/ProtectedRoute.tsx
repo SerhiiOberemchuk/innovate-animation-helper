@@ -10,6 +10,8 @@ type ProtectedRouteProps = {
 const ProtectedRoute = ({ adminOnly = false }: ProtectedRouteProps) => {
   const { user, loading, isAdmin } = useAuth();
 
+  console.log('Protected Route:', { user: !!user, loading, isAdmin, adminOnly });
+
   // Show loading spinner while checking authentication
   if (loading) {
     return (
@@ -21,15 +23,18 @@ const ProtectedRoute = ({ adminOnly = false }: ProtectedRouteProps) => {
 
   // If not authenticated, redirect to login
   if (!user) {
+    console.log('Not authenticated, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
-  // If admin only and user is not admin, show unauthorized
+  // If admin only and user is not admin, redirect to home
   if (adminOnly && !isAdmin) {
+    console.log('Not an admin, redirecting to home');
     return <Navigate to="/" replace />;
   }
 
   // Render child routes
+  console.log('Authentication successful, rendering child routes');
   return <Outlet />;
 };
 

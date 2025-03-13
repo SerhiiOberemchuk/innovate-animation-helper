@@ -11,10 +11,10 @@ import SkillsPage from "./pages/SkillsPage";
 import ExperiencePage from "./pages/ExperiencePage";
 import ContactPage from "./pages/ContactPage";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import AdminProjectsPage from "./pages/admin/ProjectsPage";
 import AddProjectPage from "./pages/admin/AddProjectPage";
 import EditProjectPage from "./pages/admin/EditProjectPage";
-import RegisterPage from "./pages/RegisterPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -29,6 +29,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/skills" element={<SkillsPage />} />
@@ -37,18 +38,18 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             
-            {/* Admin routes */}
-            <Route path="/admin" element={<ProtectedRoute adminOnly />}>
-              <Route path="projects" element={<AdminProjectsPage />} />
-              <Route path="add-project" element={<AddProjectPage />} />
-              <Route path="edit-project/:id" element={<EditProjectPage />} />
+            {/* Protected admin routes */}
+            <Route element={<ProtectedRoute adminOnly />}>
+              <Route path="/admin/projects" element={<AdminProjectsPage />} />
+              <Route path="/admin/add-project" element={<AddProjectPage />} />
+              <Route path="/admin/edit-project/:id" element={<EditProjectPage />} />
             </Route>
             
             {/* Redirect old paths to new admin routes */}
             <Route path="/add-project" element={<Navigate to="/admin/add-project" replace />} />
             <Route path="/edit-project/:id" element={<Navigate to="/admin/edit-project/:id" replace />} />
             
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

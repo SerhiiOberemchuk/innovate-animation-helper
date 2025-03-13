@@ -27,14 +27,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         setLoading(true);
         
-        // Отримуємо сесію користувача
+        // Get user session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('Помилка отримання сесії:', error);
+          console.error('Error fetching session:', error);
           toast({
-            title: 'Помилка сесії',
-            description: 'Не вдалося отримати сесію користувача.',
+            title: 'Session error',
+            description: 'Could not retrieve user session.',
             variant: 'destructive',
           });
           setLoading(false);
@@ -45,31 +45,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          try {
-            // Отримуємо роль користувача
-            const { data, error: profileError } = await supabase
-              .from('profiles')
-              .select('role')
-              .eq('id', session.user.id)
-              .single();
-            
-            if (profileError) {
-              console.warn('Помилка отримання профілю:', profileError);
-              // Не показуємо помилку користувачу, оскільки це може бути просто відсутність запису
-            } else if (data) {
-              setIsAdmin(data.role === 'admin');
-            }
-          } catch (profileErr) {
-            console.error('Помилка при запиті профілю:', profileErr);
+          // Check if user has admin role
+          const { data, error: profileError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (profileError) {
+            console.error('Error fetching profile:', profileError);
+          } else if (data) {
+            console.log('User role:', data.role);
+            setIsAdmin(data.role === 'admin');
           }
         }
       } catch (e) {
-        console.error('Неочікувана помилка при ініціалізації автентифікації:', e);
-        toast({
-          title: 'Помилка автентифікації',
-          description: 'Сталася неочікувана помилка при ініціалізації автентифікації.',
-          variant: 'destructive',
-        });
+        console.error('Unexpected auth error:', e);
       } finally {
         setLoading(false);
       }
@@ -77,13 +68,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     getInitialSession();
 
-    // Підписуємося на зміни стану автентифікації
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
+        console.log('Auth state changed:', _event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
+        setLoading(true);
         
-        // Оновлюємо статус адміністратора при зміні сесії
         if (session?.user) {
           try {
             const { data, error } = await supabase
@@ -92,15 +84,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               .eq('id', session.user.id)
               .single();
             
-            if (!error && data) {
+            if (error) {
+              console.error('Error fetching profile on auth change:', error);
+            } else if (data) {
+              console.log('User role on auth change:', data.role);
               setIsAdmin(data.role === 'admin');
             }
           } catch (err) {
-            console.error('Помилка оновлення статусу адміністратора:', err);
+            console.error('Error updating admin status:', err);
           }
         } else {
           setIsAdmin(false);
         }
+        setLoading(false);
       }
     );
 
@@ -119,16 +115,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       toast({
-        title: 'Успішний вхід',
-        description: 'Ви успішно увійшли в систему.',
+        title: 'Login successful',
+        description: 'You have successfully logged in.',
       });
     } catch (error: any) {
       toast({
-        title: 'Помилка входу',
-        description: error.message || 'Не вдалося увійти в систему.',
+        title: 'Login error',
+        description: error.message || 'Could not log in.',
         variant: 'destructive',
       });
-      console.error('Помилка входу:', error);
+      console.error('Login error:', error);
     } finally {
       setLoading(false);
     }
@@ -137,18 +133,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       setLoading(true);
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Clear local state
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
+      
       toast({
-        title: 'Вихід',
-        description: 'Ви успішно вийшли з системи.',
+        title: 'Logged out',
+        description: 'You have successfully logged out.',
       });
     } catch (error: any) {
       toast({
-        title: 'Помилка виходу',
-        description: 'Не вдалося вийти з системи.',
+        title: 'Logout error',
+        description: 'Could not log out.',
         variant: 'destructive',
       });
-      console.error('Помилка виходу:', error);
+      console.error('Logout error:', error);
     } finally {
       setLoading(false);
     }

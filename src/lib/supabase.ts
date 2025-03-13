@@ -1,19 +1,26 @@
+
 import { createClient } from "@supabase/supabase-js";
 
-// Значення за замовчуванням для запобігання помилок під час розробки
+// Default values to prevent development errors
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-console.log(supabaseUrl, supabaseAnonKey);
 
-// Функція для створення клієнта Supabase з перевіркою на наявність конфігурації
+// Log if environment variables are not set
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error(
+    "Supabase URL or Anon Key missing! Make sure you've configured VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables."
+  );
+}
+
+// Function to create Supabase client with configuration check
 const createSupabaseClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error(
-      "Supabase URL або Anon Key відсутні! Переконайтеся, що ви налаштували змінні середовища VITE_SUPABASE_URL та VITE_SUPABASE_ANON_KEY."
+      "Supabase URL or Anon Key missing! Make sure you've configured VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables."
     );
 
-    // Повертаємо клієнт з dummy URL для уникнення помилок ініціалізації
-    // В реальному сценарії він не буде працювати без дійсних облікових даних
+    // Return client with dummy URL to avoid initialization errors
+    // In a real scenario, it won't work without valid credentials
     return createClient("https://example.supabase.co", "dummy-key");
   }
 
@@ -22,7 +29,7 @@ const createSupabaseClient = () => {
 
 export const supabase = createSupabaseClient();
 
-// Типи даних для бази
+// Data types for the database
 export type Project = {
   id: string;
   title: string;

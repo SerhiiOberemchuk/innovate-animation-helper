@@ -60,6 +60,11 @@ const Navbar = () => {
     });
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = '/';
+  };
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-3 glassmorphism' : 'py-5 bg-transparent'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
@@ -104,7 +109,7 @@ const Navbar = () => {
                       <Link to="/admin/projects">Адмін</Link>
                     </Button>
                   )}
-                  <Button variant="ghost" size="sm" onClick={signOut}>
+                  <Button variant="ghost" size="sm" onClick={handleSignOut}>
                     <LogOut size={18} className="mr-1" /> Вийти
                   </Button>
                 </div>
@@ -152,7 +157,7 @@ const Navbar = () => {
                       <Link to="/admin/projects">Адмін панель</Link>
                     </Button>
                   )}
-                  <Button variant="ghost" className="w-full justify-start" onClick={signOut}>
+                  <Button variant="ghost" className="w-full justify-start" onClick={handleSignOut}>
                     <LogOut size={18} className="mr-2" /> Вийти
                   </Button>
                 </div>
