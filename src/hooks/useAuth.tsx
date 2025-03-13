@@ -79,9 +79,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Підписуємося на зміни стану автентифікації
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        
+        // Оновлюємо статус адміністратора при зміні сесії
+        if (session?.user) {
+          try {
+            const { data, error } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single();
+            
+            if (!error && data) {
+              setIsAdmin(data.role === 'admin');
+            }
+          } catch (err) {
+            console.error('Помилка оновлення статусу адміністратора:', err);
+          }
+        } else {
+          setIsAdmin(false);
+        }
       }
     );
 

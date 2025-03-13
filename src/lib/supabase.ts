@@ -44,3 +44,10 @@ export type Experience = {
   skills: string[];
   location: string;
 };
+
+export type Profile = {
+  id: string;
+  email: string;
+  role: 'admin' | 'user';
+  created_at: string;
+};

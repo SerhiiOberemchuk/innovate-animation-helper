@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Menu, X, Moon, Sun, Github, Linkedin, Mail } from 'lucide-react';
+import { Menu, X, Moon, Sun, Github, Linkedin, Mail, LogIn, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +13,7 @@ const Navbar = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const { user, signOut, isAdmin } = useAuth();
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -36,10 +37,8 @@ const Navbar = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    // Check for saved dark mode preference
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
     
-    // Check system preference if no saved preference
     if (localStorage.getItem('darkMode') === null) {
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setIsDarkMode(systemPrefersDark);
@@ -97,6 +96,25 @@ const Navbar = () => {
                   <Linkedin size={20} />
                 </Button>
               </a>
+              
+              {user ? (
+                <div className="flex items-center gap-2">
+                  {isAdmin && (
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/admin/projects">Адмін</Link>
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="sm" onClick={signOut}>
+                    <LogOut size={18} className="mr-1" /> Вийти
+                  </Button>
+                </div>
+              ) : (
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/login">
+                    <LogIn size={18} className="mr-1" /> Вхід
+                  </Link>
+                </Button>
+              )}
             </div>
           </nav>
         ) : (
@@ -112,7 +130,6 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Mobile menu */}
       {isMobile && (
         <div className={`fixed inset-0 bg-background z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex flex-col h-full pt-20 px-6">
@@ -127,6 +144,27 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
+              
+              {user ? (
+                <div className="flex flex-col gap-3 mt-4">
+                  {isAdmin && (
+                    <Button variant="outline" className="w-full justify-start" asChild>
+                      <Link to="/admin/projects">Адмін панель</Link>
+                    </Button>
+                  )}
+                  <Button variant="ghost" className="w-full justify-start" onClick={signOut}>
+                    <LogOut size={18} className="mr-2" /> Вийти
+                  </Button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="text-xl font-medium py-3 border-b border-border animate-slide-up flex items-center"
+                  style={{ animationDelay: `${navItems.length * 0.1}s` }}
+                >
+                  <LogIn size={20} className="mr-2" /> Вхід
+                </Link>
+              )}
             </nav>
             
             <div className="mt-auto mb-8 flex justify-center gap-4">

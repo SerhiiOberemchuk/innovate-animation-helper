@@ -1,13 +1,13 @@
 
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Flag, Loader2 } from 'lucide-react';
+import { Flag, Loader2, ArrowRight } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -79,8 +79,14 @@ const LoginPage = () => {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <p className="text-sm text-muted-foreground">
+          <CardFooter className="flex flex-col gap-4">
+            <div className="text-sm text-center text-muted-foreground">
+              Немає облікового запису?{' '}
+              <Link to="/register" className="text-primary hover:underline">
+                Зареєструватися <ArrowRight size={14} className="inline ml-1" />
+              </Link>
+            </div>
+            <p className="text-sm text-muted-foreground text-center">
               Особистий кабінет розробника
             </p>
           </CardFooter>
