@@ -12,7 +12,11 @@ interface Tag {
   text: string;
 }
 
-const AddProject = () => {
+interface AddProjectProps {
+  projectId?: string;
+}
+
+const AddProject = ({ projectId }: AddProjectProps) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -90,11 +94,13 @@ const AddProject = () => {
     
     setIsSubmitting(true);
     
-    // Simulate project creation
+    // Simulate project creation or update based on whether projectId is provided
     setTimeout(() => {
       toast({
-        title: "Project added!",
-        description: "Your new project has been added successfully.",
+        title: projectId ? "Project updated!" : "Project added!",
+        description: projectId 
+          ? "Your project has been updated successfully." 
+          : "Your new project has been added successfully.",
       });
       
       // Reset form
@@ -116,9 +122,11 @@ const AddProject = () => {
       <div className="container mx-auto px-4 max-w-3xl">
         <Card className="animate-scale-up">
           <CardHeader>
-            <CardTitle>Add New Project</CardTitle>
+            <CardTitle>{projectId ? "Edit Project" : "Add New Project"}</CardTitle>
             <CardDescription>
-              Showcase your latest work by adding it to your portfolio.
+              {projectId 
+                ? "Update your project information below."
+                : "Showcase your latest work by adding it to your portfolio."}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -275,11 +283,17 @@ const AddProject = () => {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 size={16} className="mr-2 animate-spin" /> Saving Project...
+                  <Loader2 size={16} className="mr-2 animate-spin" /> {projectId ? "Updating..." : "Saving Project..."}
                 </>
               ) : (
                 <>
-                  <Plus size={16} className="mr-2" /> Add Project
+                  {projectId ? (
+                    <>Update Project</>
+                  ) : (
+                    <>
+                      <Plus size={16} className="mr-2" /> Add Project
+                    </>
+                  )}
                 </>
               )}
             </Button>
