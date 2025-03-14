@@ -1,9 +1,9 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-// Default values to prevent development errors
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+// Get environment variables from Vite
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://yvnlppxrzbhieqfrhekt.supabase.co";
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2bmxwcHhyemJoaWVxZnJoZWt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4MDM3NDEsImV4cCI6MjA1NzM3OTc0MX0.w_4gj0mqFkidAzy1MlNJiO_dHimOmVzpuVbmVU_RwTI";
 
 // Log if environment variables are not set
 if (!supabaseUrl || !supabaseAnonKey) {

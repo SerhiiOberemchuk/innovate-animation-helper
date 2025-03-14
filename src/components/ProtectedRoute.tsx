@@ -26,7 +26,7 @@ const ProtectedRoute = ({ adminOnly = false }: ProtectedRouteProps) => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Перевірка авторизації...</span>
+        <span className="ml-2">Verifying authentication...</span>
       </div>
     );
   }

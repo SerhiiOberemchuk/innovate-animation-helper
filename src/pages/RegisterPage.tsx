@@ -101,9 +101,9 @@ const RegisterPage = () => {
             <div className="flex justify-center mb-4">
               <UserPlus className="h-12 w-12 text-primary" />
             </div>
-            <CardTitle className="text-2xl text-center">Реєстрація</CardTitle>
+            <CardTitle className="text-2xl text-center">Register</CardTitle>
             <CardDescription className="text-center">
-              Створіть обліковий запис для доступу до панелі адміністратора
+              Create an account to access the admin dashboard
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -123,7 +123,7 @@ const RegisterPage = () => {
               </div>
               <div className="space-y-2">
                 <label htmlFor="password" className="text-sm font-medium">
-                  Пароль
+                  Password
                 </label>
                 <Input
                   id="password"
@@ -135,7 +135,7 @@ const RegisterPage = () => {
               </div>
               <div className="space-y-2">
                 <label htmlFor="confirmPassword" className="text-sm font-medium">
-                  Підтвердження пароля
+                  Confirm Password
                 </label>
                 <Input
                   id="confirmPassword"
@@ -148,19 +148,19 @@ const RegisterPage = () => {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
                   <>
-                    <Loader2 size={16} className="mr-2 animate-spin" /> Реєстрація...
+                    <Loader2 size={16} className="mr-2 animate-spin" /> Registering...
                   </>
                 ) : (
-                  'Зареєструватися'
+                  'Register'
                 )}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <div className="text-sm text-center text-muted-foreground">
-              Вже маєте обліковий запис?{' '}
+              Already have an account?{' '}
               <Link to="/login" className="text-primary hover:underline">
-                Увійти <ArrowRight size={14} className="inline ml-1" />
+                Log in <ArrowRight size={14} className="inline ml-1" />
               </Link>
             </div>
           </CardFooter>

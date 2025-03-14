@@ -57,9 +57,9 @@ const LoginPage = () => {
                 <Flag className="text-blue-500 mt-2" size={24} />
               </div>
             </div>
-            <CardTitle className="text-2xl text-center">Вхід в систему</CardTitle>
+            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
             <CardDescription className="text-center">
-              Увійдіть, щоб отримати доступ до адмін-панелі
+              Log in to access the admin dashboard
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -79,7 +79,7 @@ const LoginPage = () => {
               </div>
               <div className="space-y-2">
                 <label htmlFor="password" className="text-sm font-medium">
-                  Пароль
+                  Password
                 </label>
                 <Input
                   id="password"
@@ -92,23 +92,23 @@ const LoginPage = () => {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
                   <>
-                    <Loader2 size={16} className="mr-2 animate-spin" /> Вхід...
+                    <Loader2 size={16} className="mr-2 animate-spin" /> Signing in...
                   </>
                 ) : (
-                  'Увійти'
+                  'Sign In'
                 )}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <div className="text-sm text-center text-muted-foreground">
-              Немає облікового запису?{' '}
+              Don't have an account?{' '}
               <Link to="/register" className="text-primary hover:underline">
-                Зареєструватися <ArrowRight size={14} className="inline ml-1" />
+                Register <ArrowRight size={14} className="inline ml-1" />
               </Link>
             </div>
             <p className="text-sm text-muted-foreground text-center">
-              Особистий кабінет розробника
+              Developer Admin Panel
             </p>
           </CardFooter>
         </Card>

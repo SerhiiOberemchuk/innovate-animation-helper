@@ -24,6 +24,10 @@ const ProjectsFetch = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
+      
+      // Test database connection
+      console.log("Testing Supabase connection...");
+      
       const { data, error } = await supabase
         .from('projects')
         .select('*')
@@ -33,14 +37,15 @@ const ProjectsFetch = () => {
         throw error;
       }
 
+      console.log("Supabase connection successful!");
       setProjects(data || []);
       setError(null);
     } catch (error: any) {
       console.error('Error fetching projects:', error);
-      setError('Не вдалося завантажити проекти');
+      setError('Failed to load projects');
       toast({
-        title: 'Помилка',
-        description: 'Не вдалося завантажити проекти',
+        title: 'Error',
+        description: 'Failed to load projects',
         variant: 'destructive',
       });
     } finally {
@@ -48,8 +53,7 @@ const ProjectsFetch = () => {
     }
   };
   
-  // Фільтруємо проекти за вибраною категорією
-  // Для демо просто фільтруємо за тегами, які містять назву категорії
+  // Filter projects by selected category
   const filteredProjects = projects.filter((project) => {
     if (activeCategory === 'all') return true;
     return project.tags.some(tag => 
@@ -66,9 +70,9 @@ const ProjectsFetch = () => {
       <section id="projects" className="section-padding">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Мої проекти</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Projects</h2>
             <p className="text-foreground/80 max-w-2xl mx-auto">
-              Ось деякі з проектів, над якими я працював. Кожен з них представляє різні виклики та досвід навчання.
+              Here are some of the projects I've worked on. Each one represents different challenges and learning experiences.
             </p>
           </div>
           <div className="flex justify-center items-center py-20">
@@ -84,9 +88,9 @@ const ProjectsFetch = () => {
       <section id="projects" className="section-padding">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Мої проекти</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Projects</h2>
             <p className="text-foreground/80 max-w-2xl mx-auto">
-              Сталася помилка при завантаженні проектів. Спробуйте оновити сторінку.
+              An error occurred while loading projects. Please try refreshing the page.
             </p>
           </div>
         </div>
@@ -98,9 +102,9 @@ const ProjectsFetch = () => {
     <section id="projects" className="section-padding">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Мої проекти</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">My Projects</h2>
           <p className="text-foreground/80 max-w-2xl mx-auto">
-            Ось деякі з проектів, над якими я працював. Кожен з них представляє різні виклики та досвід навчання.
+            Here are some of the projects I've worked on. Each one represents different challenges and learning experiences.
           </p>
         </div>
         
@@ -127,7 +131,7 @@ const ProjectsFetch = () => {
             {filteredProjects.length === 0 ? (
               <div className="text-center py-10">
                 <p className="text-muted-foreground">
-                  Проектів у цій категорії поки що немає.
+                  No projects in this category yet.
                 </p>
               </div>
             ) : (
@@ -158,7 +162,7 @@ const ProjectsFetch = () => {
             {visibleProjects < filteredProjects.length && (
               <div className="flex justify-center mt-10">
                 <Button onClick={loadMore} variant="outline" size="lg">
-                  Завантажити більше проектів
+                  Load More Projects
                 </Button>
               </div>
             )}
