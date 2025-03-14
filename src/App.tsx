@@ -13,8 +13,11 @@ import ContactPage from "./pages/ContactPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AdminProjectsPage from "./pages/admin/ProjectsPage";
+import AdminExperiencePage from "./pages/admin/ExperiencePage";
 import AddProjectPage from "./pages/admin/AddProjectPage";
 import EditProjectPage from "./pages/admin/EditProjectPage";
+import AddExperiencePage from "./pages/admin/AddExperiencePage";
+import EditExperiencePage from "./pages/admin/EditExperiencePage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -50,6 +53,9 @@ const App = () => (
               <Route path="/admin/projects" element={<AdminProjectsPage />} />
               <Route path="/admin/add-project" element={<AddProjectPage />} />
               <Route path="/admin/edit-project/:id" element={<EditProjectPage />} />
+              <Route path="/admin/experiences" element={<AdminExperiencePage />} />
+              <Route path="/admin/add-experience" element={<AddExperiencePage />} />
+              <Route path="/admin/edit-experience/:id" element={<EditExperiencePage />} />
             </Route>
             
             {/* Redirect old paths to new admin routes */}

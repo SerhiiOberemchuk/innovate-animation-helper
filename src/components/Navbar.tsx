@@ -1,10 +1,20 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Menu, X, Moon, Sun, Github, Linkedin, Mail, LogIn, LogOut } from 'lucide-react';
+import { Menu, X, Moon, Sun, Github, Linkedin, Mail, LogIn, LogOut, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -105,18 +115,42 @@ const Navbar = () => {
               {user ? (
                 <div className="flex items-center gap-2">
                   {isAdmin && (
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to="/admin/projects">Адмін</Link>
-                    </Button>
+                    <NavigationMenu>
+                      <NavigationMenuList>
+                        <NavigationMenuItem>
+                          <NavigationMenuTrigger>
+                            <LayoutDashboard className="mr-1" size={16} /> Admin Panel
+                          </NavigationMenuTrigger>
+                          <NavigationMenuContent>
+                            <ul className="grid w-[200px] gap-1 p-2">
+                              <li>
+                                <NavigationMenuLink asChild>
+                                  <Link to="/admin/projects" className="block select-none space-y-1 rounded-md p-3 hover:bg-accent hover:text-accent-foreground">
+                                    Projects Management
+                                  </Link>
+                                </NavigationMenuLink>
+                              </li>
+                              <li>
+                                <NavigationMenuLink asChild>
+                                  <Link to="/admin/experiences" className="block select-none space-y-1 rounded-md p-3 hover:bg-accent hover:text-accent-foreground">
+                                    Experience Management
+                                  </Link>
+                                </NavigationMenuLink>
+                              </li>
+                            </ul>
+                          </NavigationMenuContent>
+                        </NavigationMenuItem>
+                      </NavigationMenuList>
+                    </NavigationMenu>
                   )}
                   <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                    <LogOut size={18} className="mr-1" /> Вийти
+                    <LogOut size={18} className="mr-1" /> Logout
                   </Button>
                 </div>
               ) : (
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/login">
-                    <LogIn size={18} className="mr-1" /> Вхід
+                    <LogIn size={18} className="mr-1" /> Login
                   </Link>
                 </Button>
               )}
@@ -153,12 +187,24 @@ const Navbar = () => {
               {user ? (
                 <div className="flex flex-col gap-3 mt-4">
                   {isAdmin && (
-                    <Button variant="outline" className="w-full justify-start" asChild>
-                      <Link to="/admin/projects">Адмін панель</Link>
-                    </Button>
+                    <>
+                      <h3 className="text-sm font-semibold mt-4 text-muted-foreground">Admin Panel</h3>
+                      <Link
+                        to="/admin/projects"
+                        className="text-lg font-medium py-2 pl-2 border-l-2 border-primary animate-slide-up"
+                      >
+                        Projects Management
+                      </Link>
+                      <Link
+                        to="/admin/experiences"
+                        className="text-lg font-medium py-2 pl-2 border-l-2 border-primary animate-slide-up"
+                      >
+                        Experience Management
+                      </Link>
+                    </>
                   )}
-                  <Button variant="ghost" className="w-full justify-start" onClick={handleSignOut}>
-                    <LogOut size={18} className="mr-2" /> Вийти
+                  <Button variant="ghost" className="w-full justify-start mt-4" onClick={handleSignOut}>
+                    <LogOut size={18} className="mr-2" /> Logout
                   </Button>
                 </div>
               ) : (
@@ -167,7 +213,7 @@ const Navbar = () => {
                   className="text-xl font-medium py-3 border-b border-border animate-slide-up flex items-center"
                   style={{ animationDelay: `${navItems.length * 0.1}s` }}
                 >
-                  <LogIn size={20} className="mr-2" /> Вхід
+                  <LogIn size={20} className="mr-2" /> Login
                 </Link>
               )}
             </nav>
