@@ -18,7 +18,7 @@ const LoginPage = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if we already have a user and they're an admin, redirect to admin panel
+    // Always redirect to admin panel if user is authenticated
     if (user && isAdmin) {
       navigate('/admin/projects');
     }
@@ -36,11 +36,16 @@ const LoginPage = () => {
       return;
     }
     
-    await signIn(email, password);
+    try {
+      await signIn(email, password);
+      // Authentication is handled in the useEffect hook above
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
-  // If already logged in and admin, redirect to admin panel
-  if (user && isAdmin) {
+  // If already logged in, redirect to admin panel
+  if (user) {
     return <Navigate to="/admin/projects" />;
   }
 

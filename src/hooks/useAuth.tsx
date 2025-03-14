@@ -3,6 +3,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 type AuthContextType = {
   session: Session | null;
@@ -158,6 +159,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Login successful",
         description: "You have successfully logged in.",
       });
+      
+      // Redirect to admin page will happen in the component
     } catch (error: any) {
       toast({
         title: "Login error",

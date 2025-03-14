@@ -48,7 +48,7 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             
-            {/* Protected admin routes */}
+            {/* Protected admin routes - only accessible to admins */}
             <Route element={<ProtectedRoute adminOnly />}>
               <Route path="/admin/projects" element={<AdminProjectsPage />} />
               <Route path="/admin/add-project" element={<AddProjectPage />} />
@@ -58,7 +58,7 @@ const App = () => (
               <Route path="/admin/edit-experience/:id" element={<EditExperiencePage />} />
             </Route>
             
-            {/* Redirect old paths to new admin routes */}
+            {/* Redirect legacy paths to new admin routes */}
             <Route path="/add-project" element={<Navigate to="/admin/add-project" replace />} />
             <Route path="/edit-project/:id" element={<Navigate to="/admin/edit-project/:id" replace />} />
             
