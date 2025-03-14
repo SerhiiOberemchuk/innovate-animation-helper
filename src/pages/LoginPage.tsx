@@ -1,6 +1,6 @@
 
-import { useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -8,18 +8,39 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Flag, Loader2, ArrowRight } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { signIn, user, loading } = useAuth();
+  const { signIn, user, loading, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if we already have a user and they're an admin, redirect to admin panel
+    if (user && isAdmin) {
+      navigate('/admin/projects');
+    }
+  }, [user, isAdmin, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email || !password) {
+      toast({
+        title: "Missing information",
+        description: "Please enter both email and password",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     await signIn(email, password);
   };
 
-  if (user) {
+  // If already logged in and admin, redirect to admin panel
+  if (user && isAdmin) {
     return <Navigate to="/admin/projects" />;
   }
 

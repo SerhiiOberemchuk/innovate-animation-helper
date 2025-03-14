@@ -2,6 +2,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
 
 type ProtectedRouteProps = {
   adminOnly?: boolean;
@@ -10,13 +11,22 @@ type ProtectedRouteProps = {
 const ProtectedRoute = ({ adminOnly = false }: ProtectedRouteProps) => {
   const { user, loading, isAdmin } = useAuth();
 
-  console.log('Protected Route:', { user: !!user, loading, isAdmin, adminOnly });
+  useEffect(() => {
+    console.log('Protected Route State:', { 
+      isAuthenticated: !!user, 
+      loading, 
+      isAdmin, 
+      adminOnly,
+      userId: user?.id
+    });
+  }, [user, loading, isAdmin, adminOnly]);
 
   // Show loading spinner while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Перевірка авторизації...</span>
       </div>
     );
   }

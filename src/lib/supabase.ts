@@ -1,3 +1,4 @@
+
 import { createClient } from "@supabase/supabase-js";
 
 // Default values to prevent development errors
@@ -7,7 +8,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 // Log if environment variables are not set
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error(
-    "Supabase URL or Anon Key missing! Make sure you've configured VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables."
+    "Supabase URL or Anon Key missing! Create a .env.local file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables."
   );
 }
 
@@ -15,11 +16,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const createSupabaseClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error(
-      "Supabase URL or Anon Key missing! Make sure you've configured VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables."
+      "Supabase connection failed! Please check your environment variables in .env.local file."
     );
 
+    // Return a dummy client to prevent app crashes
     return createClient("https://example.supabase.co", "dummy-key");
   }
+  
+  console.log("Connecting to Supabase...");
   return createClient(supabaseUrl, supabaseAnonKey);
 };
 

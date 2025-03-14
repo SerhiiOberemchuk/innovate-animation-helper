@@ -1,3 +1,4 @@
+
 import { useState, useEffect, createContext, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
@@ -21,22 +22,61 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
 
+  // Helper function to check if user is admin
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      console.log("Checking admin status for user:", userId);
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile for admin check:", error);
+        return false;
+      } 
+      
+      if (data) {
+        console.log("User role data:", data);
+        return data.role === "admin";
+      }
+      
+      return false;
+    } catch (err) {
+      console.error("Unexpected error checking admin status:", err);
+      return false;
+    }
+  };
+
   useEffect(() => {
     async function getInitialSession() {
       try {
         setLoading(true);
+        console.log("Getting initial auth session...");
 
-        const { data, error: proferr } = await supabase
+        // Test database connection
+        const { data: testData, error: testError } = await supabase
           .from("projects")
-          .select("*")
+          .select("id")
           .limit(1);
-        console.log("data:", data, "proferr:", proferr);
+          
+        if (testError) {
+          console.error("Database connection test failed:", testError);
+          toast({
+            title: "Database connection error",
+            description: "Could not connect to database. Please check your configuration.",
+            variant: "destructive",
+          });
+        } else {
+          console.log("Database connection successful:", testData);
+        }
 
+        // Get session
         const {
           data: { session },
           error,
         } = await supabase.auth.getSession();
-        console.log("session:", session);
 
         if (error) {
           console.error("Error fetching session:", error);
@@ -48,25 +88,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setLoading(false);
           return;
         }
-        console.log(session);
 
+        console.log("Initial session loaded:", session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
 
-        if (session?.user) {
-          // Check if user has admin role
-          const { data, error: profileError } = await supabase
-            .from("profiles")
-            .select("role")
-            .eq("id", session.user.id)
-            .single();
-
-          if (profileError) {
-            console.error("Error fetching profile:", profileError);
-          } else if (data) {
-            console.log("User role:", data.role);
-            setIsAdmin(data.role === "admin");
-          }
+        if (session?.user?.id) {
+          const isUserAdmin = await checkAdminStatus(session.user.id);
+          console.log("Is user admin:", isUserAdmin);
+          setIsAdmin(isUserAdmin);
         }
       } catch (e) {
         console.error("Unexpected auth error:", e);
@@ -80,32 +110,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Set up auth state change listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      // console.log("Auth state changed:", _event, session?.user?.id, session);
-      setSession(session);
-      setUser(session?.user ?? null);
+    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      console.log("Auth state changed:", _event, newSession?.user?.id);
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
       setLoading(true);
 
-      if (session?.user) {
-        try {
-          const { data, error } = await supabase
-            .from("profiles")
-            .select("role")
-            .eq("id", session.user.id)
-            .single();
-
-          if (error) {
-            console.error("Error fetching profile on auth change:", error);
-          } else if (data) {
-            console.log("User role on auth change:", data.role);
-            setIsAdmin(data.role === "admin");
-          }
-        } catch (err) {
-          console.error("Error updating admin status:", err);
-        }
+      if (newSession?.user?.id) {
+        const isUserAdmin = await checkAdminStatus(newSession.user.id);
+        console.log("Is user admin (on auth change):", isUserAdmin);
+        setIsAdmin(isUserAdmin);
       } else {
         setIsAdmin(false);
       }
+      
       setLoading(false);
     });
 
@@ -117,13 +135,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log("Signing in user:", email);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
         throw error;
+      }
+
+      console.log("Sign in successful:", data.user?.id);
+      
+      if (data.user) {
+        const isUserAdmin = await checkAdminStatus(data.user.id);
+        setIsAdmin(isUserAdmin);
+        console.log("User admin status after login:", isUserAdmin);
       }
 
       toast({
@@ -145,16 +173,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       setLoading(true);
-      console.log("Click signout - перед викликом signOut()");
-      const { error: userError, data } = await supabase.auth.getUser();
-      console.log("userError:", userError);
-      console.log("data:", data);
-
-      const responseSignOut = await supabase.auth.signOut();
-      console.log("response отримано:", responseSignOut);
-
-      const { error } = responseSignOut;
-      console.log(error);
+      console.log("Signing out user");
+      
+      const { error } = await supabase.auth.signOut();
 
       if (error) {
         throw error;
@@ -169,6 +190,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Logged out",
         description: "You have successfully logged out.",
       });
+      
+      // Force redirect to home page after logout
+      window.location.href = "/";
     } catch (error: any) {
       toast({
         title: "Logout error",
@@ -178,7 +202,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Logout error:", error);
     } finally {
       setLoading(false);
-      console.log("finally");
     }
   };
 
